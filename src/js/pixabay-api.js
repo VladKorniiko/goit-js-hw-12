@@ -1,7 +1,7 @@
 import axios from 'axios';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
-export function getImagesByQuery(query) {
+export async function getImagesByQuery(query, page) {
   const config = {
     baseURL: 'https://pixabay.com/api/',
     params: {
@@ -10,16 +10,20 @@ export function getImagesByQuery(query) {
       image_type: 'photo',
       orientation: 'horizontal',
       safesearch: 'true',
+      page: page,
+      per_page: 15,
     },
   };
-  return axios(config)
-    .then(response => response.data.hits)
-    .catch(error =>
-      iziToast.show({
-        message: `Ooops, something went wrong, try again. ${error}`,
-        position: 'topRight',
-        messageColor: '#fff',
-        backgroundColor: 'red',
-      })
-    );
+
+  try {
+    const response = await axios(config);
+    return response.data;
+  } catch (error) {
+    iziToast.show({
+      message: `Ooops, something went wrong, try again. ${error}`,
+      position: 'topRight',
+      messageColor: '#fff',
+      backgroundColor: 'red',
+    });
+  }
 }
